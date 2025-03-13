@@ -1,181 +1,155 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>メールアドレスとパスワード登録</title>
-    <style>
-        /* 全体の背景と基本テキストカラー */
-        body {
-            background: #000;
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
-
-        /* フォームコンテナ */
-        form {
-            width: 100%;
-            max-width: 500px;
-            background: #222;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
-        }
-
-        /* 入力フィールドとボタン */
-        input[type="email"],
-        input[type="password"],
-        input[type="text"],
-        button {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-            border: 1px solid #777;
-            background: #333;
-            color: #fff;
-        }
-
-        button {
-            background: #008CBA;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #0073A8;
-        }
-
-        .pe-ji {
-            background-color: aqua;
-            font-weight: bold;
-        }
-
-        /* 登録済みリスト全体 */
-        .email-list {
-            width: 100%;
-            max-width: 500px;
-            margin-top: 20px;
-            padding: 20px;
-            background: #222;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
-        }
-
-        /* 各アイテム */
-        .email-item {
-            margin-bottom: 15px;
-            padding: 15px;
-            border: 1px solid #444;
-            border-radius: 8px;
-            background: #333;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .email-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
-        }
-
-        /* ボタン群 */
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            width: 100%;
-            justify-content: center;
-        }
-
-        /* 共通ボタンスタイル */
-        .copy-button,
-        .delete-button,
-        .pin-button {
-            padding: 8px 12px;
-            font-size: 0.9em;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            color: #fff;
-        }
-
-        .copy-button { background-color: #4CAF50; }
-        .copy-button:hover { background-color: #45A049; }
-
-        .delete-button { background-color: #F44336; }
-        .delete-button:hover { background-color: #E53935; }
-
-        .pin-button { background-color: #FFA500; }
-        .pin-button:hover { background-color: #FF8C00; }
-
-        .note-container { display: none; margin-top: 5px; }
-        .note-button {
-            font-size: 0.8em;
-            color: #007bff;
-            background: none;
-            border: none;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .note-button:hover { color: #0056b3; }
-
-        @media (max-width: 480px) {
-            .button-group {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .email-item {
-                text-align: center;
-                align-items: center;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<title>メールアドレスとパスワード登録</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f8f8f8;
+    }
+    h1, h2 {
+        text-align: center;
+    }
+    form {
+        max-width: 400px;
+        margin: 0 auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    label, input, button {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    .email-list {
+        max-width: 400px;
+        margin: 20px auto;
+    }
+    .email-item {
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    .button-group button {
+        flex: 1;
+        margin: 5px;
+        font-size: 14px;
+        padding: 8px;
+    }
+</style>
 </head>
 <body>
-    <h1>メールアドレスとパスワードを登録してください</h1>
-    <form id="emailForm">
-        <label for="email">メールアドレス:</label>
-        <input type="email" id="email" name="email" required>
-        
-        <label for="password">パスワード:</label>
-        <input type="email" id="password" name="password" required>
-        
-        <label for="usage">使用用途:</label>
-        <input type="text" id="usage" name="usage" placeholder="例: SNSアカウント" required>
-        
-        <button type="submit">登録</button>
-        <input type="button" onclick="location.href='gameID.html'" value="ゲームID登録画面へ" class="pe-ji">
-    </form>
+<h1>ゲーム名とメールアドレス（アカウント名）とパスワードを登録</h1>
+<form id="emailForm">
+    <label for="gameID">ゲーム名:</label>
+    <input type="text" id="gameID" name="gameID" required>
+    <label for="email">メールアドレス:</label>
+    <input type="email" id="email" name="email" required>
+    <label for="password">パスワード:</label>
+    <input type="password" id="password" name="password" required>
+    <button type="submit">登録</button>
+    <button type="button" onclick="location.href='email.html'">戻る</button>
+</form>
 
-    <div class="email-list" id="emailList">
-        <h2>登録済みメールアドレス</h2>
-    </div>
+<div class="email-list" id="emailList">
+    <h2>登録済みゲームアカウント</h2>
+</div>
 
-    <script>
-        let registeredEmails = JSON.parse(localStorage.getItem("registeredEmails")) || [];
-        document.getElementById('emailForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const usage = document.getElementById('usage').value;
+<script>
+    let registeredGameAccounts = JSON.parse(localStorage.getItem("registeredGameAccounts")) || [];
 
-            registeredEmails.push({ email, password, usage, pinned: false });
-            updateEmailList();
-            document.getElementById('emailForm').reset();
+    document.getElementById('emailForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const gameID = document.getElementById('gameID').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        registeredGameAccounts.push({ gameID, email, password, memo: "" });
+        updateEmailList();
+        document.getElementById('emailForm').reset();
+    });
+
+    function updateEmailList() {
+        const emailList = document.getElementById('emailList');
+        emailList.innerHTML = '<h2>登録済みゲームアカウント</h2>';
+
+        registeredGameAccounts.forEach((item, index) => {
+            const emailItem = document.createElement('div');
+            emailItem.className = 'email-item';
+            emailItem.innerHTML = `
+                <div>
+                    <strong>ゲーム名:</strong> ${item.gameID} <br>
+                    <strong>メールアドレス:</strong> ${item.email} <br>
+                    <strong>パスワード:</strong> <span id="password-${index}">●●●●●●</span> <br>
+                    <strong>メモ:</strong> <input type="text" id="memo-${index}" value="${item.memo}" oninput="updateMemo(${index}, this.value)">
+                </div>
+                <div class="button-group">
+                    <button onclick="copyEmail(${index})">メールコピー</button>
+                    <button onclick="copyPassword(${index})">パスコピー</button>
+                    <button onclick="deleteEmail(${index})">削除</button>
+                </div>
+            `;
+            emailList.appendChild(emailItem);
         });
 
-        updateEmailList();
-    </script>
+        localStorage.setItem("registeredGameAccounts", JSON.stringify(registeredGameAccounts));
+    }
+
+    function copyEmail(index) {
+        navigator.clipboard.writeText(registeredGameAccounts[index].email)
+            .then(() => alert('メールアドレスをコピーしました'))
+            .catch(() => alert('コピーに失敗しました。'));
+    }
+
+    function copyPassword(index) {
+        navigator.clipboard.writeText(registeredGameAccounts[index].password)
+            .then(() => alert('パスワードをコピーしました'))
+            .catch(() => alert('コピーに失敗しました。'));
+    }
+
+    function deleteEmail(index) {
+        if (confirm("このゲームアカウントを削除しますか？")) {
+            registeredGameAccounts.splice(index, 1);
+            updateEmailList();
+        }
+    }
+
+    function updateMemo(index, value) {
+        registeredGameAccounts[index].memo = value;
+        localStorage.setItem("registeredGameAccounts", JSON.stringify(registeredGameAccounts));
+    }
+
+    updateEmailList();
+</script>
 </body>
 </html>
