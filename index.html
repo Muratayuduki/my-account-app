@@ -1,49 +1,171 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script defer src="script.js"></script> <!-- `script.js` を外部ファイルとして管理 -->
-    <title>アカウント管理</title>
-</head>
-<body>
-    <h1>アカウント情報を登録してください</h1>
-    
-    <form id="accountForm">
-        <label for="accountType">アカウント種類:</label>
-        <select id="accountType">
-            <option value="email">メールアドレス</option>
-            <option value="game">ゲームアカウント</option>
-        </select>
+/* 全体の背景と基本テキストカラー */
+body {
+    background: #000;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+}
 
-        <label for="identifier">メールアドレス / ゲーム名:</label>
-        <input type="text" id="identifier" required>
+/* 登録済みリスト全体 */
+.account-list {
+    margin-top: 20px;
+    padding: 20px;
+    background: #222; /* 黒に近いダークグレー */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
 
-        <label for="password">パスワード:</label>
-        <input type="password" id="password" required>
+/* 各アイテム */
+.account-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background: #333; /* さらに暗いグレー */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-        <label for="usage">用途（ゲーム名など）:</label>
-        <input type="text" id="usage">
+.account-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
 
-        <label for="memo">メモ:</label>
-        <textarea id="memo"></textarea>
+/* 各アイテム内のテキスト */
+.account-item div {
+    color: #fff;
+    font-size: 1rem;
+}
 
-        <label><input type="checkbox" id="pin"> 重要</label>
+/* ボタン群 */
+.button-group {
+    display: flex;
+    gap: 10px;
+}
 
-        <button type="submit">登録</button>
-    </form>
+/* 共通ボタンスタイル */
+.copy-button,
+.delete-button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    color: #fff;
+}
 
-    <input type="text" id="search" placeholder="検索..." oninput="updateAccountList()">
+/* コピー用ボタン */
+.copy-button {
+    background-color: #4CAF50;
+}
 
-    <button onclick="exportData()">バックアップ</button>
-    <input type="file" id="importFile" accept=".json">
-    <button onclick="importData()">復元</button>
+.copy-button:hover {
+    background-color: #45A049;
+}
 
-    <div class="account-list" id="accountList">
-        <h2>登録済みアカウント</h2>
-    </div>
+/* 削除用ボタン */
+.delete-button {
+    background-color: #F44336;
+}
 
-</body>
-</html>
+.delete-button:hover {
+    background-color: #E53935;
+}
+
+/* 重要なアカウント */
+.pe-ji {
+    background-color: aqua;
+    font-weight: bold;
+}
+
+/* メモ表示ボタン */
+.note-container {
+    display: none;
+    margin-top: 5px;
+}
+
+.note-button {
+    font-size: 0.8em;
+    color: #007bff;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.note-button:hover {
+    color: #0056b3;
+}
+
+/* フォーム内の入力フィールド */
+form input,
+form textarea,
+form select {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background: #333;
+    color: #fff;
+}
+
+/* フォームのボタン */
+form button {
+    padding: 10px 15px;
+    font-size: 1em;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #45A049;
+}
+
+/* 検索ボックス */
+#search {
+    padding: 8px;
+    width: 100%;
+    margin: 10px 0;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background: #333;
+    color: #fff;
+}
+
+/* バックアップ、復元ボタン */
+button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+input[type="file"] {
+    background-color: #444;
+    border: 1px solid #444;
+    padding: 5px;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+input[type="file"]:hover {
+    background-color: #555;
+}
