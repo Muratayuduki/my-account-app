@@ -4,17 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <title>アカウント管理</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script defer src="script.js"></script> <!-- `script.js` を外部ファイルとして管理 -->
-    <title>アカウント管理</title
-　　<script>
-  const password = "murata"; // ここに好きなパスワード
-  const userInput = prompt("パスワードを入力してください:");
-  if (userInput !== password) {
-    document.body.innerHTML = "<h1>アクセス拒否</h1>";
-  }
-</script>
-
 </head>
 <body>
     <h1>アカウント情報を登録してください</h1>
@@ -53,5 +44,13 @@
         <h2>登録済みアカウント</h2>
     </div>
 
+    <script defer>
+      const password = "murata";
+      const userInput = prompt("パスワードを入力してください:");
+      if (userInput === null || userInput !== password) {
+          document.body.innerHTML = "<h1>アクセス拒否</h1>";
+      }
+    </script>
+    <script defer src="script.js"></script>
 </body>
-</html>
+</h
