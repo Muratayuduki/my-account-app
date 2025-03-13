@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <title>アカウント管理</title>
+    <title>メールアドレスとパスワード登録</title>
     <style>
         /* 全体の背景と基本テキストカラー */
         body {
@@ -16,34 +15,34 @@
         }
 
         /* 登録済みリスト全体 */
-        .account-list {
+        .email-list {
             margin-top: 20px;
             padding: 20px;
-            background: #222;
+            background: #222; /* 黒に近いダークグレー */
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
         }
 
         /* 各アイテム */
-        .account-item {
+        .email-item {
             margin-bottom: 15px;
             padding: 15px;
             border: 1px solid #444;
             border-radius: 8px;
-            background: #333;
+            background: #333; /* さらに暗いグレー */
             display: flex;
             align-items: center;
             justify-content: space-between;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .account-item:hover {
+        .email-item:hover {
             transform: translateY(-3px);
             box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
         }
 
         /* 各アイテム内のテキスト */
-        .account-item div {
+        .email-item div {
             color: #fff;
             font-size: 1rem;
         }
@@ -84,7 +83,13 @@
             background-color: #E53935;
         }
 
+        .pe-ji {
+            background-color: aqua;
+            font-weight: bold;
+        }
+
         .note-container {
+            display: none;
             margin-top: 5px;
         }
 
@@ -100,215 +105,103 @@
         .note-button:hover {
             color: #0056b3;
         }
-
-        .memo-content {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            background: #444;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .memo-content.visible {
-            display: block;
-        }
     </style>
 </head>
 <body>
-    <div id="content">
-        <h1>アカウント情報を登録してください</h1>
-        <form id="accountForm">
-            <p>    
-                <label for="accountType">アカウント種類:</label>
-                <select id="accountType">
-                    <option value="email">メールアドレス</option>
-                    <option value="game">ゲームアカウント</option>
-                </select>
-            </p>
+    <h1>メールアドレスとパスワードを登録してください</h1>
+    <form id="emailForm">
+        <label for="email">メールアドレス:</label>
+        <input type="email" id="email" name="email" required>
+        
+        <label for="password">パスワード:</label>
+        <input type="password" id="password" name="password" required>
+        
+        <label for="usage">使用用途:</label>
+        <input type="text" id="usage" name="usage" placeholder="例: SNSアカウント" required>
+        
+        <button type="submit">登録</button>
+        <input type="button" onclick="location.href='gameID.html'" value="ゲームID登録画面へ" class="pe-ji">
+    </form>
 
-            <p>    
-                <label for="identifier">メールアドレス / ゲーム名:</label>
-                <input type="text" id="newIdentifier" placeholder="新しいメールアドレス/ゲーム名">
-                <button type="button" onclick="addIdentifier()">追加</button>
-            </p>
-
-            <p>    
-                <label for="password">パスワード:</label>
-                <input type="password" id="password" required>
-            </p>
-
-            <p>    
-                <label for="usage">用途（ゲーム名など）:</label>
-                <input type="text" id="usage">
-            </p>
-
-            <p>    
-                <label for="memo">メモ:</label>
-                <textarea id="memo"></textarea>
-            </p>
-
-            <label><input type="checkbox" id="pin"> 重要</label>
-            <button type="submit">登録</button>
-        </form>
-        <input type="text" id="search" placeholder="検索..." oninput="updateAccountList()">
-        <div class="account-list" id="accountList">
-            <h2>登録済みアカウント</h2>
-        </div>
+    <div class="email-list" id="emailList">
+        <h2>登録済みメールアドレス</h2>
     </div>
 
     <script>
-        const secretKey = "my-secret-key";
-        let storedData = localStorage.getItem("accounts");
-        let accounts = storedData ? decryptData(storedData) : [];
-        let identifiers = [];
-
-        function encryptData(data) {
-            return CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
-        }
-
-        function decryptData(encryptedData) {
-            try {
-                const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
-                return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-            } catch (e) {
-                return [];
-            }
-        }
-
-        function loadIdentifiers() {
-            const identifierSelect = document.getElementById('identifier');
-            identifierSelect.innerHTML = '<option value="">選択してください</option>';
-            identifiers.forEach(id => {
-                const option = document.createElement('option');
-                option.value = id;
-                option.textContent = id;
-                identifierSelect.appendChild(option);
-            });
-        }
-
-        function addIdentifier() {
-            const newIdentifier = document.getElementById('newIdentifier').value;
-            if (newIdentifier && !identifiers.includes(newIdentifier)) {
-                identifiers.push(newIdentifier);
-                loadIdentifiers();
-                document.getElementById('newIdentifier').value = '';
-            }
-        }
-
-        document.getElementById('accountForm').addEventListener('submit', function(event) {
+        let registeredEmails = JSON.parse(localStorage.getItem("registeredEmails")) || [];
+        document.getElementById('emailForm').addEventListener('submit', function (event) {
             event.preventDefault();
-            const type = document.getElementById('accountType').value;
-            const newIdentifier = document.getElementById('newIdentifier').value;  // 修正: newIdentifier を取得
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const usage = document.getElementById('usage').value;
-            const memo = document.getElementById('memo').value;
-            const pinned = document.getElementById('pin').checked;
 
-            const encryptedPassword = encryptData(password);
-
-            accounts.push({ type, identifier: newIdentifier, password: encryptedPassword, usage, memo, pinned });
-            updateAccountList();
-            document.getElementById('accountForm').reset();
+            registeredEmails.push({ email, password, usage, pinned: false });
+            updateEmailList();
+            document.getElementById('emailForm').reset();
         });
 
-        function updateAccountList() {
-            const searchQuery = document.getElementById('search').value.toLowerCase();
-            const accountList = document.getElementById('accountList');
-            accountList.innerHTML = '<h2>登録済みアカウント</h2>';
+        function updateEmailList() {
+            const emailList = document.getElementById('emailList');
+            emailList.innerHTML = '<h2>登録済みメールアドレス</h2>';
 
-            let filteredAccounts = accounts.filter(acc => 
-                acc.identifier.toLowerCase().includes(searchQuery) ||
-                acc.usage.toLowerCase().includes(searchQuery) ||
-                acc.memo.toLowerCase().includes(searchQuery)
-            );
-
-            filteredAccounts.sort((a, b) => b.pinned - a.pinned);
-
-            filteredAccounts.forEach((item, index) => {
-                const decryptedPassword = decryptData(item.password);
-
-                const accountItem = document.createElement('div');
-                accountItem.className = 'account-item';
-                accountItem.innerHTML = `
+            registeredEmails.sort((a, b) => (b.pinned === a.pinned) ? 0 : b.pinned ? 1 : -1);
+            
+            registeredEmails.forEach((item, index) => {
+                const emailItem = document.createElement('div');
+                emailItem.className = 'email-item';
+                emailItem.innerHTML = `
                     <div>
-                        <strong>${item.type === "email" ? "メールアドレス:" : "ゲーム名:"}</strong> ${item.identifier} <br>
-                        <strong>パスワード:</strong> <span id="password-${index}">●●●●●●</span>
-                        <button onclick="togglePassword(${index}, '${decryptedPassword}')">表示</button> <br>
-                        <strong>用途:</strong> ${item.usage || "なし"}<br>
-                        <strong>メモ:</strong> <button class="note-button" onclick="toggleMemo(${index})">メモを表示</button>
-                        <div class="memo-content" id="memo-${index}">${item.memo || "なし"}</div>
+                        <strong>メールアドレス:</strong> ${item.email} <br>
+                        <strong>パスワード:</strong> <span id="password-${index}">●●●●●●</span><br>
+                        <button class="note-button" onclick="toggleUsage(${index})">使用用途を表示</button>
+                        <div id="note-${index}" class="note-container">${item.usage}</div>
                     </div>
                     <div class="button-group">
-                        <button onclick="copyText('${item.identifier}')">コピー</button>
-                        <button onclick="copyText('${decryptedPassword}')">パスコピー</button>
-                        <button onclick="togglePin(${index})">${item.pinned ? "ピン解除" : "ピン留め"}</button>
-                        <button onclick="deleteAccount(${index})">削除</button>
+                        <button class="copy-button" onclick="copyEmail(${index})">メールコピー</button>
+                        <button class="copy-button" onclick="copyPassword(${index})">パスコピー</button>
+                        <button class="pin-button" onclick="togglePin(${index})">${item.pinned ? '📌 解除' : '📌 ピン'}</button>
+                        <button class="delete-button" onclick="deleteEmail(${index})">削除</button>
                     </div>
                 `;
-                accountList.appendChild(accountItem);
+                emailList.appendChild(emailItem);
             });
-            localStorage.setItem("accounts", encryptData(accounts));
+
+            localStorage.setItem("registeredEmails", JSON.stringify(registeredEmails));
         }
 
-        function togglePassword(index, decryptedPassword) {
-            const passwordField = document.getElementById(`password-${index}`);
-            passwordField.textContent = passwordField.textContent === "●●●●●●" ? decryptedPassword : "●●●●●●";
+        function toggleUsage(index) {
+            const note = document.getElementById(`note-${index}`);
+            note.style.display = note.style.display === "none" ? "block" : "none";
         }
 
-        function toggleMemo(index) {
-            const memoContent = document.getElementById(`memo-${index}`);
-            memoContent.classList.toggle('visible');
-        }
-
-        function copyText(text) {
-            navigator.clipboard.writeText(text)
-                .then(() => alert('コピーしました: ' + text))
+        function copyEmail(index) {
+            const email = registeredEmails[index].email;
+            navigator.clipboard.writeText(email)
+                .then(() => alert('メールアドレスをコピーしました: ' + email))
                 .catch(err => alert('コピーに失敗しました。'));
         }
 
-        function deleteAccount(index) {
-            if (confirm("このアカウントを削除しますか？")) {
-                accounts.splice(index, 1);
-                updateAccountList();
+        function copyPassword(index) {
+            const password = registeredEmails[index].password;
+            navigator.clipboard.writeText(password)
+                .then(() => alert('パスワードをコピーしました'))
+                .catch(err => alert('コピーに失敗しました。'));
+        }
+
+        function deleteEmail(index) {
+            if (confirm("このメールアドレスを削除しますか？")) {
+                registeredEmails.splice(index, 1);
+                updateEmailList();
             }
         }
 
         function togglePin(index) {
-            accounts[index].pinned = !accounts[index].pinned;
-            updateAccountList();
+            registeredEmails[index].pinned = !registeredEmails[index].pinned;
+            registeredEmails.sort((a, b) => (b.pinned === a.pinned) ? 0 : b.pinned ? 1 : -1);
+            updateEmailList();
         }
 
-        function exportData() {
-            const encryptedData = encryptData(accounts);
-            const blob = new Blob([encryptedData], { type: "text/plain" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "backup.txt";
-            link.click();
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    accounts = decryptData(e.target.result);
-                    updateAccountList();
-                    alert("データを復元しました！");
-                } catch (error) {
-                    alert("復元に失敗しました。");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // 初期化
-        loadIdentifiers();
-        updateAccountList();
+        updateEmailList();
     </script>
 </body>
 </html>

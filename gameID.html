@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<title>メールアドレスとパスワード登録</title>
+</head>
+<body>
+<h1>ゲーム名とメールアドレス（アカウント名）とパスワードを登録してください</h1>
+<form id="emailForm">
+    <label for="gameID">ゲーム名:</label>
+    <input type="text" id="gameID" name="gameID" required>
+    <label for="email">メールアドレス（アカウント名）:</label>
+    <input id="email" name="email" required>
+    <label for="password">パスワード:</label>
+    <input type="password" id="password" name="password" required>
+    <button type="submit">登録</button>
+    <input type="button" onclick="location.href='email.html'" value="戻る" class="pe-ji">
+</form>
+
+<div class="email-list" id="emailList">
+    <h2>登録済みゲームアカウント</h2>
+</div>
+
+<script>
+    let registeredGameAccounts = JSON.parse(localStorage.getItem("registeredGameAccounts")) || [];
+
+    document.getElementById('emailForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const gameID = document.getElementById('gameID').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        registeredGameAccounts.push({ gameID, email, password, memo: "" });
+        updateEmailList();
+        document.getElementById('emailForm').reset();
+    });
+
+    function updateEmailList() {
+        const emailList = document.getElementById('emailList');
+        emailList.innerHTML = '<h2>登録済みゲームアカウント</h2>';
+
+        registeredGameAccounts.forEach((item, index) => {
+            const emailItem = document.createElement('div');
+            emailItem.className = 'email-item';
+            emailItem.innerHTML = `
+                <div>
+                    <strong>ゲーム名:</strong> ${item.gameID} <br>
+                    <strong>メールアドレス:</strong> ${item.email} <br>
+                    <strong>パスワード:</strong> <span id="password-${index}">●●●●●●</span> <br>
+                    <strong>メモ:</strong> <input type="text" id="memo-${index}" value="${item.memo}" oninput="updateMemo(${index}, this.value)">
+                </div>
+                <div class="button-group">
+                    <button class="copy-button" onclick="copyEmail(${index})">メールコピー</button>
+                    <button class="copy-button" onclick="copyPassword(${index})">パスコピー</button>
+                    <button class="delete-button" onclick="deleteEmail(${index})">削除</button>
+                </div>
+            `;
+            emailList.appendChild(emailItem);
+        });
+
+        localStorage.setItem("registeredGameAccounts", JSON.stringify(registeredGameAccounts));
+    }
+
+    function copyEmail(index) {
+        const email = registeredGameAccounts[index].email;
+        navigator.clipboard.writeText(email)
+            .then(() => alert('メールアドレスをコピーしました: ' + email))
+            .catch(err => alert('コピーに失敗しました。'));
+    }
+
+    function copyPassword(index) {
+        const password = registeredGameAccounts[index].password;
+        navigator.clipboard.writeText(password)
+            .then(() => alert('パスワードをコピーしました'))
+            .catch(err => alert('コピーに失敗しました。'));
+    }
+
+    function deleteEmail(index) {
+        if (confirm("このゲームアカウントを削除しますか？")) {
+            registeredGameAccounts.splice(index, 1);
+            updateEmailList();
+        }
+    }
+
+    function updateMemo(index, value) {
+        registeredGameAccounts[index].memo = value;
+        localStorage.setItem("registeredGameAccounts", JSON.stringify(registeredGameAccounts));
+    }
+
+    updateEmailList();
+</script>
+
+</body>
+</html>
