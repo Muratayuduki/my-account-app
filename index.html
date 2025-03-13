@@ -12,13 +12,58 @@
             font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* フォームコンテナ */
+        form {
+            width: 100%;
+            max-width: 500px;
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+        }
+
+        /* 入力フィールドとボタン */
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #777;
+            background: #333;
+            color: #fff;
+        }
+
+        button {
+            background: #008CBA;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0073A8;
+        }
+
+        .pe-ji {
+            background-color: aqua;
+            font-weight: bold;
         }
 
         /* 登録済みリスト全体 */
         .email-list {
+            width: 100%;
+            max-width: 500px;
             margin-top: 20px;
             padding: 20px;
-            background: #222; /* 黒に近いダークグレー */
+            background: #222;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
         }
@@ -29,10 +74,10 @@
             padding: 15px;
             border: 1px solid #444;
             border-radius: 8px;
-            background: #333; /* さらに暗いグレー */
+            background: #333;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column;
+            align-items: flex-start;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
@@ -41,21 +86,19 @@
             box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
         }
 
-        /* 各アイテム内のテキスト */
-        .email-item div {
-            color: #fff;
-            font-size: 1rem;
-        }
-
         /* ボタン群 */
         .button-group {
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
+            width: 100%;
+            justify-content: center;
         }
 
         /* 共通ボタンスタイル */
         .copy-button,
-        .delete-button {
+        .delete-button,
+        .pin-button {
             padding: 8px 12px;
             font-size: 0.9em;
             cursor: pointer;
@@ -65,34 +108,16 @@
             color: #fff;
         }
 
-        /* コピー用ボタン */
-        .copy-button {
-            background-color: #4CAF50;
-        }
+        .copy-button { background-color: #4CAF50; }
+        .copy-button:hover { background-color: #45A049; }
 
-        .copy-button:hover {
-            background-color: #45A049;
-        }
+        .delete-button { background-color: #F44336; }
+        .delete-button:hover { background-color: #E53935; }
 
-        /* 削除用ボタン */
-        .delete-button {
-            background-color: #F44336;
-        }
+        .pin-button { background-color: #FFA500; }
+        .pin-button:hover { background-color: #FF8C00; }
 
-        .delete-button:hover {
-            background-color: #E53935;
-        }
-
-        .pe-ji {
-            background-color: aqua;
-            font-weight: bold;
-        }
-
-        .note-container {
-            display: none;
-            margin-top: 5px;
-        }
-
+        .note-container { display: none; margin-top: 5px; }
         .note-button {
             font-size: 0.8em;
             color: #007bff;
@@ -102,8 +127,18 @@
             text-decoration: underline;
         }
 
-        .note-button:hover {
-            color: #0056b3;
+        .note-button:hover { color: #0056b3; }
+
+        @media (max-width: 480px) {
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .email-item {
+                text-align: center;
+                align-items: center;
+            }
         }
     </style>
 </head>
@@ -139,67 +174,6 @@
             updateEmailList();
             document.getElementById('emailForm').reset();
         });
-
-        function updateEmailList() {
-            const emailList = document.getElementById('emailList');
-            emailList.innerHTML = '<h2>登録済みメールアドレス</h2>';
-
-            registeredEmails.sort((a, b) => (b.pinned === a.pinned) ? 0 : b.pinned ? 1 : -1);
-            
-            registeredEmails.forEach((item, index) => {
-                const emailItem = document.createElement('div');
-                emailItem.className = 'email-item';
-                emailItem.innerHTML = `
-                    <div>
-                        <strong>メールアドレス:</strong> ${item.email} <br>
-                        <strong>パスワード:</strong> <span id="password-${index}">●●●●●●</span><br>
-                        <button class="note-button" onclick="toggleUsage(${index})">使用用途を表示</button>
-                        <div id="note-${index}" class="note-container">${item.usage}</div>
-                    </div>
-                    <div class="button-group">
-                        <button class="copy-button" onclick="copyEmail(${index})">メールコピー</button>
-                        <button class="copy-button" onclick="copyPassword(${index})">パスコピー</button>
-                        <button class="pin-button" onclick="togglePin(${index})">${item.pinned ? '📌 解除' : '📌 ピン'}</button>
-                        <button class="delete-button" onclick="deleteEmail(${index})">削除</button>
-                    </div>
-                `;
-                emailList.appendChild(emailItem);
-            });
-
-            localStorage.setItem("registeredEmails", JSON.stringify(registeredEmails));
-        }
-
-        function toggleUsage(index) {
-            const note = document.getElementById(`note-${index}`);
-            note.style.display = note.style.display === "none" ? "block" : "none";
-        }
-
-        function copyEmail(index) {
-            const email = registeredEmails[index].email;
-            navigator.clipboard.writeText(email)
-                .then(() => alert('メールアドレスをコピーしました: ' + email))
-                .catch(err => alert('コピーに失敗しました。'));
-        }
-
-        function copyPassword(index) {
-            const password = registeredEmails[index].password;
-            navigator.clipboard.writeText(password)
-                .then(() => alert('パスワードをコピーしました'))
-                .catch(err => alert('コピーに失敗しました。'));
-        }
-
-        function deleteEmail(index) {
-            if (confirm("このメールアドレスを削除しますか？")) {
-                registeredEmails.splice(index, 1);
-                updateEmailList();
-            }
-        }
-
-        function togglePin(index) {
-            registeredEmails[index].pinned = !registeredEmails[index].pinned;
-            registeredEmails.sort((a, b) => (b.pinned === a.pinned) ? 0 : b.pinned ? 1 : -1);
-            updateEmailList();
-        }
 
         updateEmailList();
     </script>
