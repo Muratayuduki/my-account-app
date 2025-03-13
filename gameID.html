@@ -5,94 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>メールアドレスとパスワード登録</title>
     <style>
-        /* 全体の背景と基本テキストカラー */
         body {
             background: #000;
             color: #fff;
             font-family: 'Montserrat', sans-serif;
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* 登録済みリスト全体 */
+        .container {
+            width: 90%;
+            max-width: 500px;
+            padding: 20px;
+        }
+
         .email-list {
             margin-top: 20px;
-            padding: 20px;
-            background: #222; /* 黒に近いダークグレー */
+            padding: 15px;
+            background: #222;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
         }
 
-        /* 各アイテム */
         .email-item {
-            margin-bottom: 15px;
-            padding: 15px;
+            margin-bottom: 10px;
+            padding: 10px;
             border: 1px solid #444;
             border-radius: 8px;
-            background: #333; /* さらに暗いグレー */
+            background: #333;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            flex-direction: column;
+            gap: 5px;
         }
 
-        .email-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
-        }
-
-        /* 各アイテム内のテキスト */
-        .email-item div {
-            color: #fff;
-            font-size: 1rem;
-        }
-
-        /* ボタン群 */
         .button-group {
             display: flex;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 5px;
         }
 
-        /* 共通ボタンスタイル */
         .copy-button,
         .delete-button {
-            padding: 8px 12px;
+            flex: 1;
+            min-width: 100px;
+            padding: 8px;
             font-size: 0.9em;
-            cursor: pointer;
             border: none;
             border-radius: 5px;
-            transition: background-color 0.3s ease;
             color: #fff;
         }
 
-        /* コピー用ボタン */
-        .copy-button {
-            background-color: #4CAF50;
-        }
-
-        .copy-button:hover {
-            background-color: #45A049;
-        }
-
-        /* 削除用ボタン */
-        .delete-button {
-            background-color: #F44336;
-        }
-
-        .delete-button:hover {
-            background-color: #E53935;
-        }
-
-        .pe-ji {
-            background-color: aqua;
-            font-weight: bold;
-        }
+        .copy-button { background-color: #4CAF50; }
+        .copy-button:hover { background-color: #45A049; }
+        .delete-button { background-color: #F44336; }
+        .delete-button:hover { background-color: #E53935; }
 
         input[type="text"],
         input[type="email"],
-        input[type="password"] {
+        input[type="password"],
+        button {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             margin: 5px 0;
             border: 1px solid #777;
             border-radius: 5px;
@@ -100,56 +76,35 @@
             color: #fff;
         }
 
-        button {
-            padding: 10px;
-            background: #008CBA;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        button { background: #008CBA; }
+        button:hover { background: #0073A8; }
 
-        button:hover {
-            background: #0073A8;
-        }
-
-        .note-container {
-            display: none;
-            margin-top: 5px;
-        }
-
-        .note-button {
-            font-size: 0.8em;
-            color: #007bff;
-            background: none;
-            border: none;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .note-button:hover {
-            color: #0056b3;
+        @media (max-width: 480px) {
+            .button-group {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>ゲーム名とメールアドレス（アカウント名）とパスワードを登録してください</h1>
-    <form id="emailForm">
-        <label for="gameID">ゲーム名:</label>
-        <input type="text" id="gameID" name="gameID" required>
+    <div class="container">
+        <h1>ゲームアカウント登録</h1>
+        <form id="emailForm">
+            <label for="gameID">ゲーム名:</label>
+            <input type="text" id="gameID" name="gameID" required>
 
-        <label for="email">メールアドレス（アカウント名）:</label>
-        <input id="email" name="email" required>
+            <label for="email">メールアドレス:</label>
+            <input id="email" name="email" required>
 
-        <label for="password">パスワード:</label>
-        <input type="password" id="password" name="password" required>
+            <label for="password">パスワード:</label>
+            <input type="password" id="password" name="password" required>
 
-        <button type="submit">登録</button>
-        <input type="button" onclick="location.href='index.html'" value="戻る" class="pe-ji">
-    </form>
+            <button type="submit">登録</button>
+        </form>
 
-    <div class="email-list" id="emailList">
-        <h2>登録済みゲームアカウント</h2>
+        <div class="email-list" id="emailList">
+            <h2>登録済みアカウント</h2>
+        </div>
     </div>
 
     <script>
@@ -161,25 +116,22 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            registeredGameAccounts.push({ gameID, email, password, memo: "" });
+            registeredGameAccounts.push({ gameID, email, password });
             updateEmailList();
             document.getElementById('emailForm').reset();
         });
 
         function updateEmailList() {
             const emailList = document.getElementById('emailList');
-            emailList.innerHTML = '<h2>登録済みゲームアカウント</h2>';
+            emailList.innerHTML = '<h2>登録済みアカウント</h2>';
 
             registeredGameAccounts.forEach((item, index) => {
                 const emailItem = document.createElement('div');
                 emailItem.className = 'email-item';
                 emailItem.innerHTML = `
-                    <div>
-                        <strong>ゲーム名:</strong> ${item.gameID} <br>
-                        <strong>メールアドレス:</strong> ${item.email} <br>
-                        <strong>パスワード:</strong> <span id="password-${index}">●●●●●●</span> <br>
-                        <strong>メモ:</strong> <input type="text" id="memo-${index}" value="${item.memo}" oninput="updateMemo(${index}, this.value)">
-                    </div>
+                    <div><strong>ゲーム名:</strong> ${item.gameID}</div>
+                    <div><strong>メール:</strong> ${item.email}</div>
+                    <div><strong>パスワード:</strong> ●●●●●●</div>
                     <div class="button-group">
                         <button class="copy-button" onclick="copyEmail(${index})">メールコピー</button>
                         <button class="copy-button" onclick="copyPassword(${index})">パスコピー</button>
@@ -193,29 +145,20 @@
         }
 
         function copyEmail(index) {
-            const email = registeredGameAccounts[index].email;
-            navigator.clipboard.writeText(email)
-                .then(() => alert('メールアドレスをコピーしました: ' + email))
-                .catch(err => alert('コピーに失敗しました。'));
+            navigator.clipboard.writeText(registeredGameAccounts[index].email)
+                .then(() => alert('コピーしました'));
         }
 
         function copyPassword(index) {
-            const password = registeredGameAccounts[index].password;
-            navigator.clipboard.writeText(password)
-                .then(() => alert('パスワードをコピーしました'))
-                .catch(err => alert('コピーに失敗しました。'));
+            navigator.clipboard.writeText(registeredGameAccounts[index].password)
+                .then(() => alert('コピーしました'));
         }
 
         function deleteEmail(index) {
-            if (confirm("このゲームアカウントを削除しますか？")) {
+            if (confirm("削除しますか？")) {
                 registeredGameAccounts.splice(index, 1);
                 updateEmailList();
             }
-        }
-
-        function updateMemo(index, value) {
-            registeredGameAccounts[index].memo = value;
-            localStorage.setItem("registeredGameAccounts", JSON.stringify(registeredGameAccounts));
         }
 
         updateEmailList();
