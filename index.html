@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script defer src="script.js"></script> <!-- `script.js` を外部ファイルとして管理 -->
+    <title>アカウント管理</title>
+</head>
+<body>
+    <h1>アカウント情報を登録してください</h1>
+    
+    <form id="accountForm">
+        <label for="accountType">アカウント種類:</label>
+        <select id="accountType">
+            <option value="email">メールアドレス</option>
+            <option value="game">ゲームアカウント</option>
+        </select>
+
+        <label for="identifier">メールアドレス / ゲーム名:</label>
+        <input type="text" id="identifier" required>
+
+        <label for="password">パスワード:</label>
+        <input type="password" id="password" required>
+
+        <label for="usage">用途（ゲーム名など）:</label>
+        <input type="text" id="usage">
+
+        <label for="memo">メモ:</label>
+        <textarea id="memo"></textarea>
+
+        <label><input type="checkbox" id="pin"> 重要</label>
+
+        <button type="submit">登録</button>
+    </form>
+
+    <input type="text" id="search" placeholder="検索..." oninput="updateAccountList()">
+
+    <button onclick="exportData()">バックアップ</button>
+    <input type="file" id="importFile" accept=".json">
+    <button onclick="importData()">復元</button>
+
+    <div class="account-list" id="accountList">
+        <h2>登録済みアカウント</h2>
+    </div>
+
+</body>
+</html>
