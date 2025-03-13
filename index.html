@@ -84,13 +84,7 @@
             background-color: #E53935;
         }
 
-        .pe-ji {
-            background-color: aqua;
-            font-style: bold;
-        }
-
         .note-container {
-            display: none;
             margin-top: 5px;
         }
 
@@ -106,41 +100,69 @@
         .note-button:hover {
             color: #0056b3;
         }
+
+        .memo-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #444;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .memo-content.visible {
+            display: block;
+        }
     </style>
 </head>
 <body>
-    <h1>アカウント情報を登録してください</h1>
-    <form id="accountForm">
-        <label for="accountType">アカウント種類:</label>
-        <select id="accountType">
-            <option value="email">メールアドレス</option>
-            <option value="game">ゲームアカウント</option>
-        </select>
+    <div id="content">
+        <h1>アカウント情報を登録してください</h1>
+        <form id="accountForm">
+            <p>    
+                <label for="accountType">アカウント種類:</label>
+                <select id="accountType">
+                    <option value="email">メールアドレス</option>
+                    <option value="game">ゲームアカウント</option>
+                </select>
+            </p>
 
-        <label for="identifier">メールアドレス / ゲーム名:</label>
-        <input type="text" id="identifier" required>
+            <p>    
+                <label for="identifier">メールアドレス / ゲーム名:</label>
+                <input type="text" id="newIdentifier" placeholder="新しいメールアドレス/ゲーム名">
+                <button type="button" onclick="addIdentifier()">追加</button>
+            </p>
 
-        <label for="password">パスワード:</label>
-        <input type="password" id="password" required>
+            <p>    
+                <label for="password">パスワード:</label>
+                <input type="password" id="password" required>
+            </p>
 
-        <label for="usage">用途（ゲーム名など）:</label>
-        <input type="text" id="usage">
+            <p>    
+                <label for="usage">用途（ゲーム名など）:</label>
+                <input type="text" id="usage">
+            </p>
 
-        <label for="memo">メモ:</label>
-        <textarea id="memo"></textarea>
+            <p>    
+                <label for="memo">メモ:</label>
+                <textarea id="memo"></textarea>
+            </p>
 
-        <label><input type="checkbox" id="pin"> 重要</label>
-
-        <button type="submit">登録</button>
-    </form>
-
-    <input type="text" id="search" placeholder="検索..." oninput="updateAccountList()">
-    <div class="account-list" id="accountList">
-        <h2>登録済みアカウント</h2>
+            <label><input type="checkbox" id="pin"> 重要</label>
+            <button type="submit">登録</button>
+        </form>
+        <input type="text" id="search" placeholder="検索..." oninput="updateAccountList()">
+        <div class="account-list" id="accountList">
+            <h2>登録済みアカウント</h2>
+        </div>
     </div>
 
     <script>
         const secretKey = "my-secret-key";
+        let storedData = localStorage.getItem("accounts");
+        let accounts = storedData ? decryptData(storedData) : [];
+        let identifiers = [];
 
         function encryptData(data) {
             return CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
@@ -155,13 +177,30 @@
             }
         }
 
-        let storedData = localStorage.getItem("accounts");
-        let accounts = storedData ? decryptData(storedData) : [];
+        function loadIdentifiers() {
+            const identifierSelect = document.getElementById('identifier');
+            identifierSelect.innerHTML = '<option value="">選択してください</option>';
+            identifiers.forEach(id => {
+                const option = document.createElement('option');
+                option.value = id;
+                option.textContent = id;
+                identifierSelect.appendChild(option);
+            });
+        }
+
+        function addIdentifier() {
+            const newIdentifier = document.getElementById('newIdentifier').value;
+            if (newIdentifier && !identifiers.includes(newIdentifier)) {
+                identifiers.push(newIdentifier);
+                loadIdentifiers();
+                document.getElementById('newIdentifier').value = '';
+            }
+        }
 
         document.getElementById('accountForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const type = document.getElementById('accountType').value;
-            const identifier = document.getElementById('identifier').value;
+            const newIdentifier = document.getElementById('newIdentifier').value;  // 修正: newIdentifier を取得
             const password = document.getElementById('password').value;
             const usage = document.getElementById('usage').value;
             const memo = document.getElementById('memo').value;
@@ -169,7 +208,7 @@
 
             const encryptedPassword = encryptData(password);
 
-            accounts.push({ type, identifier, password: encryptedPassword, usage, memo, pinned });
+            accounts.push({ type, identifier: newIdentifier, password: encryptedPassword, usage, memo, pinned });
             updateAccountList();
             document.getElementById('accountForm').reset();
         });
@@ -198,7 +237,8 @@
                         <strong>パスワード:</strong> <span id="password-${index}">●●●●●●</span>
                         <button onclick="togglePassword(${index}, '${decryptedPassword}')">表示</button> <br>
                         <strong>用途:</strong> ${item.usage || "なし"}<br>
-                        <strong>メモ:</strong> ${item.memo || "なし"}
+                        <strong>メモ:</strong> <button class="note-button" onclick="toggleMemo(${index})">メモを表示</button>
+                        <div class="memo-content" id="memo-${index}">${item.memo || "なし"}</div>
                     </div>
                     <div class="button-group">
                         <button onclick="copyText('${item.identifier}')">コピー</button>
@@ -215,6 +255,11 @@
         function togglePassword(index, decryptedPassword) {
             const passwordField = document.getElementById(`password-${index}`);
             passwordField.textContent = passwordField.textContent === "●●●●●●" ? decryptedPassword : "●●●●●●";
+        }
+
+        function toggleMemo(index) {
+            const memoContent = document.getElementById(`memo-${index}`);
+            memoContent.classList.toggle('visible');
         }
 
         function copyText(text) {
@@ -261,6 +306,8 @@
             reader.readAsText(file);
         }
 
+        // 初期化
+        loadIdentifiers();
         updateAccountList();
     </script>
 </body>
