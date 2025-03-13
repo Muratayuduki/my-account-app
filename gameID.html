@@ -55,12 +55,6 @@
         .pe-ji {
             background-color: aqua;
             font-weight: bold;
-            width: 100%;
-            text-align: center;
-            padding: 10px;
-            display: block;
-            border-radius: 5px;
-            margin-top: 10px;
         }
 
         /* 登録済みリスト全体 */
@@ -155,14 +149,13 @@
         <input type="email" id="email" name="email" required>
         
         <label for="password">パスワード:</label>
-        <input type="password" id="password" name="password" required>
+        <input type="email" id="password" name="password" required>
         
         <label for="usage">使用用途:</label>
         <input type="text" id="usage" name="usage" placeholder="例: SNSアカウント" required>
         
         <button type="submit">登録</button>
         <input type="button" onclick="location.href='gameID.html'" value="ゲームID登録画面へ" class="pe-ji">
-        <input type="button" onclick="location.href='index.html'" value="戻る" class="pe-ji">
     </form>
 
     <div class="email-list" id="emailList">
