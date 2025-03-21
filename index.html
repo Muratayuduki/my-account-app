@@ -7,17 +7,41 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>アドレスとPWを登録</h1>
+    <h1>アカウント情報の登録</h1>
+    <div class="description-container">
+        <p class="description">メールアドレスとパスワードを安全に保存・管理できます</p>
+        <p class="security-note">
+            <span class="security-icon">🔒</span>
+            情報は端末内にのみ保存され、外部に送信</br>されることはありません
+        </p>
+    </div>
+    
     <form id="emailForm">
-        <input type="email" id="email" placeholder="メールアドレス" required>
-        <input type="password" id="password" placeholder="パスワード" required>
-        <input type="text" id="usage" placeholder="使用用途 (例: SNS)" required>
-        <button type="submit">登録</button>
-        <button type="button" onclick="location.href='gameID.html'">ゲームID登録画面へ</button>
+        <div class="form-group">
+            <label for="email">メールアドレス</label>
+            <input type="email" id="email" placeholder="example@domain.com" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">パスワード</label>
+            <input type="password" id="password" placeholder="8文字以上推奨" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="usage">使用サービス</label>
+            <input type="text" id="usage" placeholder="例: Twitter, Instagram" required>
+        </div>
+        
+        <div class="button-container">
+            <button type="submit" class="primary-button">登録する</button>
+            <button type="button" class="secondary-button" onclick="location.href='gameID.html'">
+                ゲームID登録へ
+            </button>
+        </div>
     </form>
 
     <div class="email-list" id="emailList">
-        <h2>登録済み</h2>
+        <h2>登録済みアカウント</h2>
     </div>
 
     <script src="script.js"></script>
