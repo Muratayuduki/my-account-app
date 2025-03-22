@@ -13,7 +13,7 @@ document.getElementById('emailForm').addEventListener('submit', function(event) 
 
 function updateEmailList() {
     const emailList = document.getElementById('emailList');
-    emailList.innerHTML = '<h2>登録済み</h2>';
+    emailList.innerHTML = '<h2>登録済みアカウント</h2>';
     
     registeredEmails.forEach((item, index) => {
         const emailItem = document.createElement('div');
@@ -24,9 +24,9 @@ function updateEmailList() {
                 <br>パスワード: <span>●●●●●</span>
             </div>
             <div class="button-group">
-                <button onclick="copyEmail(${index})">📋 メール</button>
-                <button onclick="copyPassword(${index})">🔑 パス</button>
-                <button onclick="deleteEmail(${index})">🗑️ 削除</button>
+                <button onclick="copyEmail(${index})" class="action-button">📋 メール</button>
+                <button onclick="copyPassword(${index})" class="action-button">🔑 パス</button>
+                <button onclick="deleteEmail(${index})" class="delete-button">🗑️ 削除</button>
             </div>
         `;
         emailList.appendChild(emailItem);
